@@ -1,98 +1,10 @@
 const Tour = require('./../models/tourModel');
 const tourModel = require('./../models/tourModel');
 
-// // Read Tour from jsonfile
+//Read the JSON file
 // const tourSimple = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8')
 // );
-
-// Tour Router Callbacks
-exports.getAllTour = async (req, res) => {
-  try {
-    const tours = await tourModel.find();
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tours,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'No Tours Could Be Found',
-      message: err.message,
-    });
-  }
-};
-
-exports.getTourById = async (req, res) => {
-  try {
-    const tour = await tourModel.findById(req.params.id);
-    // tour.findOne({ _id: req.params.id }); // This is the same as the line above
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'No Tour Found',
-      message: err.message,
-    });
-  }
-};
-
-exports.patchId = (req, res) => {
-  const tour = tourSimple.find((el) => el.id === parseInt(req.params.id));
-
-  if (tour) {
-    tourSimple[parseInt(tour.id)].name = req.body.name;
-    fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
-      JSON.stringify(tourSimple),
-      (err) => {
-        res.status(200).json({
-          status: 'succes',
-          data: {
-            tour: tourSimple[parseInt(tour.id)],
-          },
-        });
-      }
-    );
-  } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'No such tour. Use a valid path...',
-    });
-  }
-};
-
-exports.deleteId = (req, res) => {
-  const tour = tourSimple.find((el) => el.id === parseInt(req.params.id));
-  console.log(tour);
-
-  if (tour) {
-    tourSimple.splice(tour.id, 1);
-
-    fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
-      JSON.stringify(tourSimple),
-      (err) => {
-        res.status(200).json({
-          status: 'succes',
-          data: {
-            tour: tourSimple,
-          },
-        });
-      }
-    );
-  } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'No such tour. Use a valid path...',
-    });
-  }
-};
 
 // Create a new tour using async
 exports.createTour = async (req, res) => {
@@ -110,6 +22,92 @@ exports.createTour = async (req, res) => {
     // Catches any errors and responds with the error
     res.status(400).json({
       status: 'Was not able ot create tour',
+      message: err.message,
+    });
+  }
+};
+
+exports.updateTour = async (req, res) => {
+  try {
+    // Query for the tour we want to update bases on id
+    // new:true returns the updated tour , without returns the old tour
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'Was not able ot create tour',
+      message: err.message,
+    });
+  }
+};
+
+//
+
+//  Get all tours
+exports.getAllTour = async (req, res) => {
+  try {
+    // Build the query creating hard copy of the query (query is an object and cant be copied by reference)
+    const queryObj = { ...req.query };
+    // Remove the fields that we don't want to use in the query
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    // Loop through the excluded fields and delete them from the query
+    excludedFields.forEach((el) => delete queryObj[el]);
+    //Finally we have a query that we can use to get the data we want
+    const query = Tour.find(queryObj);
+    // Execute the query
+    const tours = await query;
+    res.status(200).json({
+      status: 'success',
+      data: {
+        'Tours Found': tours.length,
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'No Tours Could Be Found',
+      message: err.message,
+    });
+  }
+};
+
+exports.getTourById = async (req, res) => {
+  try {
+    const tour = await tourModel.findById(req.params.id);
+    // tour.findOne({ _id: req.params.id }); // This is the same as the line above
+    res.status(200).json({
+      status: 'The Tour was found',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'No Tour Found',
+      message: err.message,
+    });
+  }
+};
+
+exports.deleteTour = async (req, res) => {
+  try {
+    const tour = await tourModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      status: 'This Tour was deleted 👇',
+      tour,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'No Tour Found',
       message: err.message,
     });
   }

@@ -1,8 +1,9 @@
 // Configre the .env file
 const dotenv = require('dotenv');
+const { json } = require('express');
 const mongoose = require('mongoose');
 
-// Loads the config properties from the .env file
+// Loads the config properties from the .env file (goes before app)
 dotenv.config({ path: './config.env' });
 
 // Launch app with env config
@@ -32,7 +33,6 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-console.log(Date().toString());
 // Connect to the database using mongoose (Use these options to avoid deprecation warnings) Immediately-invoked Function Expression
 (async () => {
   try {
