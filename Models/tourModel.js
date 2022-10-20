@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-//Creating schema for a collection insidee the DataBes (shema is the structure of the collection)
+//Creating schema for a collection insidee the DataBase (shema is the structure of the collection)
 const tourSchema = new mongoose.Schema({
   //Schema type options
   name: {

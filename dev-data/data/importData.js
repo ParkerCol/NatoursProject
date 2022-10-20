@@ -10,7 +10,6 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-console.log(Date().toString());
 // Connect to the database using mongoose (Use these options to avoid deprecation warnings) Immediately-invoked Function Expression
 (async () => {
   try {
@@ -52,11 +51,7 @@ const deleteData = async () => {
 //node dev-data/data/importData.js --import (to import data)
 
 if (process.argv[2] === '--import') {
-  deleteData();
-
   importData();
 } else if (process.argv[2] === '--delete') {
   deleteData();
 }
-
-console.log(process.argv);
