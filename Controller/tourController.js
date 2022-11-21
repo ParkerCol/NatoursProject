@@ -1,5 +1,4 @@
 const Tour = require('./../models/tourModel');
-const tourModel = require('./../models/tourModel');
 
 //Read the JSON file
 // const tourSimple = JSON.parse(
@@ -10,7 +9,7 @@ const tourModel = require('./../models/tourModel');
 exports.createTour = async (req, res) => {
   try {
     // Create and saves a new tour using the tourModel and waits for the promise to be resolved returning the new tour
-    const newTour = await tourModel.create(req.body);
+    const newTour = await Tour.create(req.body);
     // Responds with the new tour that was created and saved
     res.status(201).json({
       status: 'success',
@@ -55,7 +54,9 @@ exports.updateTour = async (req, res) => {
 //  Get all tours
 exports.getAllTour = async (req, res) => {
   try {
-    // Build the query creating hard copy of the query (query is an object and cant be copied by reference)
+    // Bruild the query creating hard copy of the quey (query is an object and cant be copied by reference)
+    console.log(req.query);
+    //Destrcuturing the query object and creating a new object with the properties we want
     const queryObj = { ...req.query };
     // Remove the fields that we don't want to use in the query
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
@@ -82,7 +83,7 @@ exports.getAllTour = async (req, res) => {
 
 exports.getTourById = async (req, res) => {
   try {
-    const tour = await tourModel.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id);
     // tour.findOne({ _id: req.params.id }); // This is the same as the line above
     res.status(200).json({
       status: 'The Tour was found',
@@ -100,7 +101,7 @@ exports.getTourById = async (req, res) => {
 
 exports.deleteTour = async (req, res) => {
   try {
-    const tour = await tourModel.findByIdAndDelete(req.params.id);
+    const tour = await Tour.findByIdAndDelete(req.params.id);
     res.status(200).json({
       status: 'This Tour was deleted 👇',
       tour,
